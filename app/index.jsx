@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { Text, View, StyleSheet, Image, Pressable } from "react-native";
+import { useRef, useState } from "react";
+import { Text, View, StyleSheet, Image, useWindowDimensions  } from "react-native";
+import { FokusButton } from "../components/FokusButton";
+import { ActionButton } from "../components/ActionButton";
+import { Timer } from "../components/Timer";
+import { IconPause, IconPlay } from "../components/icons"
 
 const pomodoro = [
   {
@@ -24,35 +28,77 @@ const pomodoro = [
 
 export default function Index() {
 
+  const { width, height } = useWindowDimensions();
+
   const [timerType, setTimerType] = useState(pomodoro[0]);
+
+  const timeRef = useRef(null)
+
+  const [timerRuning, setTimerRunning] = useState(false)
+
+  const [seconds, setSeconds] = useState(pomodoro[0].initialValue)
+
+  const clearTimer = () => {
+    if (timeRef.current != null) {
+      clearInterval(timeRef.current)
+      timeRef.current = null
+      setTimerRunning(false)
+    }
+  }
+
+  const toogleTimerType = (timerType) => {
+    setTimerType(timerType)
+    setSeconds(timerType.initialValue)
+    clearTimer()
+  }
+
+  const toogleTimer = () => {
+    if (timeRef.current) {
+      clearTimer()
+      return
+    }
+    setTimerRunning(true)
+    const id = setInterval(() => {
+      setSeconds((oldState) => {
+        if (oldState <= 0) {
+          clearTimer()
+          return timerType.initialValue
+        }
+        return oldState - 1
+      })
+      console.log('Timer rolando')
+    }, 1000)
+    timeRef.current = id
+
+  }
 
   return (
     <View style={styles.container}>
-      <Image source={timerType.image} />
+      <Image
+        source={timerType.image}
+        style={{
+          width: width * 0.6,   
+          height: height * 0.3,
+          resizeMode: 'contain'
+        }} />
       <View style={styles.actions}>
         <View style={styles.context}>
           {pomodoro.map((pomodoroType) => (
-            <Pressable
-              key={pomodoroType.id}
-              style={ timerType.id === pomodoroType.id ? styles.contextButtonActive : null }
-              onPress={() => setTimerType(pomodoroType)}>
-              <Text style={styles.contextButtonText}>
-                {pomodoroType.display}
-              </Text>
-            </Pressable>
+            <ActionButton
+              Key={pomodoroType.id}
+              active={timerType.id === pomodoroType.id}
+              onPress={() => toogleTimerType(pomodoroType)}
+              display={pomodoroType.display}
+            />
           ))}
         </View>
-        <Text style={styles.timer}>
-          {new Date(timerType.initialValue * 1000).toLocaleTimeString('pt-BR', {
-            minute: '2-digit',
-            second: '2-digit'
-          })}
-        </Text>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>
-            Começar
-          </Text>
-        </Pressable>
+        <Timer
+          totalSeconds={seconds}
+        />
+        <FokusButton
+          onPress={toogleTimer}
+          title={timerRuning ? 'Pausar' : 'Começar'}
+          icons={timerRuning ? <IconPause /> : <IconPlay />} />
       </View>
       <View style={styles.footer}>
         <Text style={styles.footerText}>
@@ -87,31 +133,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-  },
-  contextButtonActive: {
-    backgroundColor: '#144480',
-    borderRadius: 8
-  },
-  contextButtonText: {
-    fontSize: 12.5,
-    color: '#fff',
-    padding: 8
-  },
-  timer: {
-    fontSize: 54,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  button: {
-    backgroundColor: '#B872FF',
-    padding: 8,
-    borderRadius: 32
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: '#021123',
-    fontSize: 18
   },
   footer: {
     width: '80%',
