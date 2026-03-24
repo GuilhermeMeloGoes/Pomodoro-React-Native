@@ -1,12 +1,52 @@
+import { useState } from "react";
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 
+const pomodoro = [
+  {
+    id: 'focus',
+    initialValue: 25,
+    image: require('./pomodoro.png'),
+    display: 'Foco'
+  },
+  {
+    id: 'short',
+    initialValue: 5,
+    image: require('./short.png'),
+    display: 'Pausa Curta'
+  },
+  {
+    id: 'long',
+    initialValue: 15,
+    image: require('./long.png'),
+    display: 'Pausa Longa'
+  }
+]
+
 export default function Index() {
+
+  const [timerType, setTimerType] = useState(pomodoro[0]);
+
   return (
     <View style={styles.container}>
-      <Image source={require('./pomodoro.png')} />
+      <Image source={timerType.image} />
       <View style={styles.actions}>
+        <View style={styles.context}>
+          {pomodoro.map((pomodoroType) => (
+            <Pressable
+              key={pomodoroType.id}
+              style={ timerType.id === pomodoroType.id ? styles.contextButtonActive : null }
+              onPress={() => setTimerType(pomodoroType)}>
+              <Text style={styles.contextButtonText}>
+                {pomodoroType.display}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
         <Text style={styles.timer}>
-          25:00
+          {new Date(timerType.initialValue * 1000).toLocaleTimeString('pt-BR', {
+            minute: '2-digit',
+            second: '2-digit'
+          })}
         </Text>
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>
@@ -43,6 +83,20 @@ const styles = StyleSheet.create({
     borderColor: '#144480',
     gap: 32
   },
+  context: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  contextButtonActive: {
+    backgroundColor: '#144480',
+    borderRadius: 8
+  },
+  contextButtonText: {
+    fontSize: 12.5,
+    color: '#fff',
+    padding: 8
+  },
   timer: {
     fontSize: 54,
     color: '#fff',
@@ -63,7 +117,6 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   footerText: {
-
     textAlign: 'center',
     color: '#98A0A8',
     fontStyle: 12.5
