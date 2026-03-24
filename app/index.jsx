@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 
 export default function Index() {
   return (
@@ -7,6 +7,19 @@ export default function Index() {
       <View style={styles.actions}>
         <Text style={styles.timer}>
           25:00
+        </Text>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>
+            Começar
+          </Text>
+        </Pressable>
+      </View>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          Projeto criado para praticar React Native.
+        </Text>
+        <Text style={styles.footerText}>
+          Utilizando o método Pomodoro para aumentar a produtividade.
         </Text>
       </View>
     </View >
@@ -27,12 +40,32 @@ const styles = StyleSheet.create({
     width: '80%',
     borderRadius: 32,
     borderWidth: 2,
-    borderColor: '#144480'
+    borderColor: '#144480',
+    gap: 32
   },
   timer: {
     fontSize: 54,
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center'
+  },
+  button: {
+    backgroundColor: '#B872FF',
+    padding: 8,
+    borderRadius: 32
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#021123',
+    fontSize: 18
+  },
+  footer: {
+    width: '80%',
+  },
+  footerText: {
+
+    textAlign: 'center',
+    color: '#98A0A8',
+    fontStyle: 12.5
   }
 })
